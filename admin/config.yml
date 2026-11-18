@@ -1,0 +1,68 @@
+# Panel de Lucifer.net (Decap CMS)
+# ⚠️ Cambia TU_USUARIO por tu nombre de usuario de GitHub (solo esta línea).
+backend:
+  name: github
+  repo: lucifernet113/lucifer-stitches
+  branch: main
+  commit_messages:
+    update: "Actualizar {{slug}}"
+
+locale: es
+site_url: https://lucifer-stitches.netlify.app
+display_url: https://lucifer-stitches.netlify.app
+logo_url: /img/logo.jpg
+
+# Dónde se guardan las fotos que subas
+media_folder: img
+public_folder: /img
+
+collections:
+  - name: tienda
+    label: Tienda
+    editor:
+      preview: false
+    files:
+      - name: productos
+        label: Prendas
+        file: productos.json
+        format: json
+        fields:
+          - name: items
+            label: Prendas
+            label_singular: prenda
+            widget: list
+            add_to_top: true
+            collapsed: true
+            summary: "{{fields.title}} · {{fields.price}} €"
+            fields:
+              - { name: title, label: Título, widget: string }
+              - { name: price, label: "Precio (€)", widget: number, value_type: float, min: 0, step: 0.5 }
+              - { name: was, label: "Precio anterior (solo si está rebajado)", widget: number, value_type: float, min: 0, required: false }
+              - name: imgs
+                label: "Fotos (la primera es la portada)"
+                widget: list
+                field: { name: img, label: Foto, widget: image }
+              - name: cat
+                label: Tipo
+                widget: select
+                options: [Ropa, Accesorios]
+                default: Accesorios
+              - { name: size, label: Talla, widget: string, required: false }
+              - name: condition
+                label: Estado
+                widget: select
+                options: ["Nuevo con etiquetas", "Nuevo sin etiquetas", "Muy bueno", "Bueno", "Satisfactorio"]
+                default: "Muy bueno"
+              - { name: brand, label: Marca, widget: string, required: false, default: "Hecho a mano" }
+              - name: tags
+                label: Pegatinas
+                widget: select
+                multiple: true
+                required: false
+                options: ["Recién llegado ✧", "Hecho a mano 🪡", "Pieza única", "Rebajado"]
+                default: ["Recién llegado ✧", "Hecho a mano 🪡", "Pieza única"]
+              - { name: desc, label: Descripción, widget: text, required: false }
+              - { name: meas, label: Medidas, widget: string, required: false }
+              - { name: url, label: "Enlace del anuncio en Vinted", widget: string, required: false }
+              - { name: depop, label: "Enlace en Depop (opcional)", widget: string, required: false }
+              - { name: sold, label: "Vendido", widget: boolean, default: false }

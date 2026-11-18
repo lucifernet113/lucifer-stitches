@@ -18,10 +18,16 @@ function gallery(it,big){
   pics.forEach((src,k)=>{const im=el("img"); im.src=src; im.alt=it.title+(pics.length>1?" (foto "+(k+1)+")":""); if(!big){im.loading="lazy"; im.onclick=()=>openDetail(it);} gal.appendChild(im);});
   wrap.appendChild(gal);
   if(pics.length>1){
+    const go=k=>{ k=(k+pics.length)%pics.length; gal.scrollTo({left:k*gal.clientWidth,behavior:"smooth"}); };
+    const cur=()=>Math.round(gal.scrollLeft/gal.clientWidth);
     const d=el("div","dots");
-    pics.forEach((_,k)=>d.appendChild(el("i",k?"":"on")));
-    gal.addEventListener("scroll",()=>{const k=Math.round(gal.scrollLeft/gal.clientWidth); [...d.children].forEach((x,j)=>x.className=j===k?"on":"");},{passive:true});
-    wrap.appendChild(d);
+    pics.forEach((_,k)=>{const i=el("i",k?"":"on"); i.title="Foto "+(k+1); i.onclick=e=>{e.stopPropagation(); go(k);}; d.appendChild(i);});
+    gal.addEventListener("scroll",()=>{const k=cur(); [...d.children].forEach((x,j)=>x.className=j===k?"on":"");},{passive:true});
+    const prev=el("button","nav prev","‹"), next=el("button","nav next","›");
+    prev.type=next.type="button"; prev.setAttribute("aria-label","Foto anterior"); next.setAttribute("aria-label","Foto siguiente");
+    prev.onclick=e=>{e.stopPropagation(); go(cur()-1);}; next.onclick=e=>{e.stopPropagation(); go(cur()+1);};
+    wrap.append(d,prev,next);
+    if(big) wrap.tabIndex=-1, wrap.onkeydown=e=>{ if(e.key==="ArrowLeft") go(cur()-1); if(e.key==="ArrowRight") go(cur()+1); };
   }
   return wrap;
 }
@@ -101,6 +107,7 @@ function openDetail(it){
   sh.appendChild(b);
   try{dlg.showModal();}catch(_){dlg.setAttribute("open","");}
   sh.scrollTop=0;
+  const pw=sh.querySelector(".phwrap"); if(pw&&pw.tabIndex===-1) pw.focus({preventScroll:true});
 }
 function closeDetail(){ if(dlg.open) dlg.close(); }
 dlg.addEventListener("click",e=>{ if(e.target===dlg) closeDetail(); });
